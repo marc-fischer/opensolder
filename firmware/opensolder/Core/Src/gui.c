@@ -8,7 +8,7 @@
  */
 
 #include "gui.h"
-#include "ssd1306.h"
+#include "../../Drivers/ssd1306/inc/ssd1306.h"
 #include "temperature.h"
 #include <stdio.h>
 #include <string.h>

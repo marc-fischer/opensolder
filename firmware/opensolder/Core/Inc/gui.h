@@ -10,7 +10,7 @@
 
 /******    Includes    ******/
 #include "opensolder.h"
-#include "ssd1306.h"
+#include "../../Drivers/ssd1306/inc/ssd1306.h"
 
 /******    Global Function Declarations    ******/
 void init_display(uint16_t timeout);
