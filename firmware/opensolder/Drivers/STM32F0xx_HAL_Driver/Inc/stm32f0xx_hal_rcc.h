@@ -568,7 +568,7 @@ typedef struct
 /** @defgroup RCC_Flag Flags
   *        Elements values convention: XXXYYYYYb
   *           - YYYYY  : Flag position in the register
-  *           - XXX  : Register index
+  *           - ZZZ  : Register index
   *                 - 001: CR register
   *                 - 010: CR2 register
   *                 - 011: BDCR register
