@@ -14,11 +14,11 @@
  * - Settings menu
  */
 
+#include <tip_temperature.h>
 #include "opensolder.h"
 #include "button.h"
 #include "encoder.h"
 #include "gui.h"
-#include "temperature.h"
 
 /******    Local Function Declarations    ******/
 static void state_machine(void);

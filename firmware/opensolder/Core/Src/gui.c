@@ -9,9 +9,10 @@
 
 #include "gui.h"
 #include "../../Drivers/ssd1306/inc/ssd1306.h"
-#include "temperature.h"
 #include <stdio.h>
 #include <string.h>
+#include <tip_temperature.h>
+#include "../../Drivers/pcb_temperature/inc/pcb_temperature.h"
 
 /******    Struct Declaration    ******/
 typedef struct {
