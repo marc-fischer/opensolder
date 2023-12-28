@@ -1,14 +1,15 @@
-# OpenSolder
-Fully open source JBC T245-compatible soldering station and tool holder  
-![](/mechanical/images/front.png)
+# Marcs OpenSolder
+Fully open source JBC T245-compatible soldering station and tool holder, forked from [howie-j's opensolder](https://github.com/howie-j/opensolder)
+![](./mechanical/images/front.png)
 
 ## Introduction
-When my cheap T12 clone soldering station went up in smoke, I started looking into either buying a JBC CDB, or building a proper soldering station. The internet is already crowded with DIY JBC compatible stations, but most are poorly documented, or does not have the quality-of-life features that the original have.
-
-The [unisolder project](https://github.com/sparkybg/UniSolder-5.2) is very impressive, but way to complex and "universal" for my needs. [Marco Reps](https://youtu.be/GYIiOkr6x9o) built a cool C470 station that i liked the simplicity of, and this project is highly inspired by that.
+When looking to buy a genuine JBC station to replace my dated ERSA icon Pico I've came across howie-j's opensolder. That was already pretty close to my requirements, so i forked this repo. 
 
 ## Goals:
 - _T12 clone_ form factor that does not take up valuable bench space
+- Optional USB connection to PID tune and compensate offsets
+- Add a tag-connect debug connector 
+- Add a I2C to the breakout to be able to extend functionality afterwards (ie. desolder station)
 - JBC T245 tip compatibility, with similar performance to the original station
 - QoL features that the CDB station have, like auto standby, tip remover, holder, tip cleaner etc.
 - Simple design using cheap off-the-shelf parts
@@ -27,17 +28,17 @@ The [unisolder project](https://github.com/sparkybg/UniSolder-5.2) is very impre
 - Hardware should be mostly 3D printable, and easy to build using regular tools
 
 ## Station
-![](/mechanical/images/station_1.png)  
+![](./mechanical/images/station_1.png)  
 The station is built in a Hammond enclosure, with a center mounted transformer. The PCB is mounted to the custom front panel, and all 230VAC connections is in the rear of the chassis.
 There is two connectors on the rear panel, one for connecting to the stand, and an optional ST-link connector for firmware upgrades.
 
 ## Stand
-![](/mechanical/images/stand_1.png)  
+![](./mechanical/images/stand_1.png)  
 The stand is made of 3D-printed parts, a genuine JBC tool holder, a tip remover made from aluminium angle and some fasteners. Most parts can be made from aluminium sheet if that is preferred.
 
 ## Schematic
 This is the internal connections of the JBC C245 cartridge:  
-![](/hardware/images/jbc_c245_connection_diagram.png)  
+![](./hardware/images/jbc_c245_connection_diagram.png)  
 
 [__The schematic__](https://github.com/howie-j/OpenSolder/raw/main/hardware/schematic.pdf) is divided into three sheets: AC, Analog and MCU.
 
@@ -60,14 +61,14 @@ To sense if there is a tip cartridge in the handpiece, _TIP_CHECK_ is driven hig
 A STM32F072 is used since I have a few of them in stock, but almost any STM32 could be adapted to work. To sense PCB temperature (and for cold junction compensation), an I2C temp sensor is added. The MCU might have an internal temperature sensor, but  have not looked into that yet.
 
 The rotary encoder and handpiece stand inputs are filtered using plain RC filters. This, combined with the input hysteresis, removes most input noise. The TIM encoder inputs also have additional filtering and FSM redundancy.
- 
+
 
 ## PCB
 [___Check out this interactive BOM___](http://htmlpreview.github.io/?https://github.com/howie-j/OpenSolder/blob/main/hardware/bom/interactive_bom.html)
 
-![](/hardware/images/pcb_front.png)  
-![](/hardware/images/pcb_rear.png)  
-The PCB is quite low density, uses 0805 SMD components and is fully hand solderable with a microscope. Connections to the rear connectors (stand and ST-link) is done via a 6-pin IDC connector, so no crimping of tiny connector pins are necessary. The PCB is mounted to the front panel via the rotary encoder and the handpiece connector.
+![](./hardware/images/pcb_front.png)  
+![](./hardware/images/pcb_rear.png)  
+The PCB is quite low density, uses 0603 SMD components and is fully hand solderable with a microscope. Connections to the rear connectors (stand and I2C-2 breakout) is done via a 6-pin IDC connector, so no crimping of tiny connector pins are necessary. The PCB is mounted to the front panel via the rotary encoder and the handpiece connector.
 
 
 ## Firmware
@@ -84,7 +85,8 @@ Nothing is currently missing for regular functionality. However some features wo
 
 
 ## Links and Sources
-[The unisolder project](https://github.com/sparkybg/UniSolder-5.2)  
-[Marco Reps](https://youtu.be/GYIiOkr6x9o)  
-[foldvarid93's JBC Soldering Station](https://github.com/foldvarid93/JBC_SolderingStation)  
-[johnmx's eevblog thread](https://eevblog.com/forum/testgear/jbc-soldering-station-cd-2bc-complete-schematic-analysis/)  
+[The unisolder project](https://github.com/sparkybg/UniSolder-5.2) 
+[Marco Reps](https://youtu.be/GYIiOkr6x9o) 
+[foldvarid93's JBC Soldering Station](https://github.com/foldvarid93/JBC_SolderingStation) 
+[johnmx's eevblog thread](https://eevblog.com/forum/testgear/jbc-soldering-station-cd-2bc-complete-schematic-analysis/) 
+[howie-j's opensolder](https://github.com/howie-j/opensolder)
