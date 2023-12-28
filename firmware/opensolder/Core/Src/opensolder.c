@@ -11,10 +11,11 @@
  * - implement better power regulation: PID or other alternave
  * - Better error handling
  * - Regular pcb temp readings for overheating protection and cold junction compensation
- * - Settings menu
+ * - Settings menu	--- problem: there is no eeprom. a settings menu is useless
+ * - "sleep-mode" to halt all heating and just show OFF after a elapsed amount of time after standby
  */
 
-#include <tip_temperature.h>
+#include <tip_thermocouple.h>
 #include "opensolder.h"
 #include "button.h"
 #include "encoder.h"
@@ -29,7 +30,7 @@ static void read_mmi(void);
 static uint8_t system_state;
 
 static button tool_holder_sensor; // Detects when tool is placed in holder
-static button tip_change_sensor;  // Detects when tool touches the tip change bracket
+static button tip_change_sensor; // Detects when tool touches the tip change bracket
 static button mmi_button;		  // Front rotary encoder button
 static encoder mmi_encoder;		  // Front rotary encoder
 
@@ -41,6 +42,7 @@ static uint8_t mmi_encoder_event;
 /******    Init    ******/
 void opensolder_init(void) {
 	HAL_TIM_Encoder_Start(&htim2, TIM_CHANNEL_ALL);
+	HAL_TIM_Base_Start_IT(&htim14);
 	HAL_I2C_Init(&hi2c1);
 	HAL_ADCEx_Calibration_Start(&hadc);
 	HAL_Delay(50); // Wait for calibration to finish
@@ -51,7 +53,8 @@ void opensolder_init(void) {
 
 void init_mmi(void) {
 	button_init(&tool_holder_sensor, STAND_GPIO_Port, STAND_Pin, INVERTED);
-	button_init(&tip_change_sensor, TIP_REMOVER_GPIO_Port, TIP_REMOVER_Pin, INVERTED);
+	button_init(&tip_change_sensor, TIP_REMOVER_GPIO_Port, TIP_REMOVER_Pin,
+			INVERTED);
 	button_init(&mmi_button, ENC_SW_GPIO_Port, ENC_SW_Pin, INVERTED);
 	encoder_init(&mmi_encoder, TIM2);
 }
@@ -76,64 +79,64 @@ static void state_machine(void) {
 	}
 
 	switch (system_state) {
-		case INIT_STATE:
-			heater_off();
+	case INIT_STATE:
+		set_tip_heater_off();
+		draw_default_display();
+		system_state = TIP_CHANGE_STATE;
+		break;
+
+	case TIP_CHANGE_STATE:
+		set_tip_heater_off();
+		if (tool_tip_state != TIP_DETECTED) {
+			tip_insert_delay_tick_ms = HAL_GetTick() + TIP_CHANGE_DELAY_MS;
+			display_message(tool_tip_state);
+		} else if ((tool_tip_state == TIP_DETECTED)
+				&& (HAL_GetTick() > tip_insert_delay_tick_ms)
+				&& !tip_change_state) {
 			draw_default_display();
+			system_state = OFF_STATE;
+		}
+		break;
+
+	case OFF_STATE:
+		set_tip_heater_off();
+		if (tip_change_state || (tool_tip_state != TIP_DETECTED)) {
 			system_state = TIP_CHANGE_STATE;
-			break;
+		} else if (!tool_holder_state) {
+			system_state = ON_STATE;
+		}
+		update_display();
+		break;
 
-		case TIP_CHANGE_STATE: {
-			heater_off();
+	case ON_STATE:
+		if (tip_change_state || (tool_tip_state != TIP_DETECTED)) {
+			system_state = TIP_CHANGE_STATE;
+		} else if (tool_holder_state) {
+			standby_timeout_tick_ms = HAL_GetTick() + (STANDBY_TIME_S * 1000);
+			system_state = STANDBY_STATE;
+		}
+		update_display();
+		break;
 
-			if (tool_tip_state != TIP_DETECTED) {
-				tip_insert_delay_tick_ms = HAL_GetTick() + TIP_CHANGE_DELAY_MS;
-				display_message(tool_tip_state);
-			} else if ((tool_tip_state == TIP_DETECTED) && (HAL_GetTick() > tip_insert_delay_tick_ms) && !tip_change_state) {
-				draw_default_display();
-				system_state = OFF_STATE;
-			}
-		} break;
+	case STANDBY_STATE:
+		if (tip_change_state || (tool_tip_state != TIP_DETECTED)) {
+			system_state = TIP_CHANGE_STATE;
+		} else if (!tool_holder_state) {
+			system_state = ON_STATE;
+		} else if (HAL_GetTick() > standby_timeout_tick_ms) {
+			system_state = OFF_STATE;
+		}
+		update_display();
+		break;
 
-		case OFF_STATE:
-			heater_off();
+	case ERROR_STATE:
+		error_handler();
+		system_state = INIT_STATE;
+		break;
 
-			if (tip_change_state || (tool_tip_state != TIP_DETECTED)) {
-				system_state = TIP_CHANGE_STATE;
-			} else if (!tool_holder_state) {
-				system_state = ON_STATE;
-			}
-			update_display();
-			break;
-
-		case ON_STATE:
-			if (tip_change_state || (tool_tip_state != TIP_DETECTED)) {
-				system_state = TIP_CHANGE_STATE;
-			} else if (tool_holder_state) {
-				standby_timeout_tick_ms = HAL_GetTick() + (STANDBY_TIME_S * 1000);
-				system_state = STANDBY_STATE;
-			}
-			update_display();
-			break;
-
-		case STANDBY_STATE:
-			if (tip_change_state || (tool_tip_state != TIP_DETECTED)) {
-				system_state = TIP_CHANGE_STATE;
-			} else if (!tool_holder_state) {
-				system_state = ON_STATE;
-			} else if (HAL_GetTick() > standby_timeout_tick_ms) {
-				system_state = OFF_STATE;
-			}
-			update_display();
-			break;
-
-		case ERROR_STATE:
-			error_handler();
-			system_state = INIT_STATE;
-			break;
-
-		default:
-			system_state = ERROR_STATE;
-			break;
+	default:
+		system_state = ERROR_STATE;
+		break;
 	}
 }
 

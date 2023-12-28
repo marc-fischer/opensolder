@@ -11,7 +11,8 @@
 #include "../../Drivers/ssd1306/inc/ssd1306.h"
 #include <stdio.h>
 #include <string.h>
-#include <tip_temperature.h>
+#include <tip_thermocouple.h>
+
 #include "../../Drivers/pcb_temperature/inc/pcb_temperature.h"
 
 /******    Struct Declaration    ******/
