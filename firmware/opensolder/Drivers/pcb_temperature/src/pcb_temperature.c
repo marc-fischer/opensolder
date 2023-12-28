@@ -4,7 +4,7 @@
  * This lib implements pcb temperature related functionalities
  */
 
-#include "pcb_temperature.h"
+#include "../inc/pcb_temperature.h"
 
 int16_t read_pcb_temperature(void) {
 	int16_t temp_register = 0;
