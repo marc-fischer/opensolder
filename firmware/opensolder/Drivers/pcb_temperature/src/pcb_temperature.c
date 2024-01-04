@@ -6,7 +6,7 @@
 
 #include "../inc/pcb_temperature.h"
 
-int16_t read_pcb_temperature(void) {
+int16_t pcb_temperature_driver__get_temperature(void) {
 	int16_t temp_register = 0;
 	uint8_t tmp_buffer[2];
 

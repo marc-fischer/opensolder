@@ -21,11 +21,12 @@
 #include "timers.h"
 #include "hid.h"
 
-/******    Local Function Declarations    ******/
-static void read_mmi(void);
-
 /******    File Scope Variables    ******/
-static uint8_t system_state;
+static uint8_t system_state;		// error, idle, standby, sleep, operational, initial (default)
+static uint8_t tool_state;			// heating, cooling, idle 	//	TODO: Move to separate class
+static uint8_t toolholder_state;	// error, present, absent	//	TODO: Move to separate class
+static uint8_t toolchanger_state;	// error, present, absent	//	TODO: Move to separate class
+
 
 /******    Init    ******/
 void opensolder_init(void) {
@@ -39,11 +40,23 @@ void opensolder_init(void) {
 }
 
 // --- handlers ---
-/** opensolder synchronous main state machine
+/** opensolder synchronous main system state machine
  * main state machine controls:
  * - Display
  * - Menu
  * - Error, Idle, Standby, Sleep, Operational State
+ *
+ *
+ * opensolder_main implements:
+ * - system state
+ * opensoder_main extends:
+ * - tool state
+ * - toolholder state
+ * - toolchanger state
+ * - display state
+ * - tip heater state
+ * - tip thermocouple state
+ * - hid input state
  */
 void opensolder_main(void) {
 	static uint32_t standby_timeout_tick_ms = 0;

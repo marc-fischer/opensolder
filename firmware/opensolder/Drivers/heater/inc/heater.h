@@ -9,16 +9,16 @@
 #define HEATER_INC_HEATER_H_
 #include "opensolder.h"
 
-enum heater_driver_states {
-	OK = 0,
-	NOK = 1,
-	FORBIDDEN = 2
+enum heater_driver__states {
+	OK = 0,		// OUTPUT is operational
+	NOK = 1,	// error detected, output not operational
+	FORBIDDEN = 2	// forbidden to enable the output (safety disable)
 };
 
-void set_heater_state(uint8_t state);
-uint8_t get_heater_state(void);
+void heater_driver__set_state(uint8_t state);
+uint8_t heater_driver__get_state(void);
 
-void set_heater_output_on(void);
-void set_heater_output_off(void);
+void heater_driver__set_output_on(void);
+void heater_driver__set_output_off(void);
 
 #endif /* HEATER_INC_HEATER_H_ */

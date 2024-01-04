@@ -121,7 +121,7 @@ void draw_init_display(void) {
 
 	// Read ambient temperature and concaternate to s_ambient.string
 	char s_buffer[STR_ARRAY_MAX_LEN];
-	snprintf(s_buffer, sizeof(s_buffer), "%d'C", read_pcb_temperature());
+	snprintf(s_buffer, sizeof(s_buffer), "%d'C", pcb_temperature_driver__get_temperature());
 	strcat(s_ambient.string, s_buffer);
 
 	write_string(s_firmware);

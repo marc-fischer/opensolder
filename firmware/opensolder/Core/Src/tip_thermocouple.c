@@ -64,8 +64,8 @@ void tip_timer_handler(void) {
 	if (tip_timer_delay_flag == SET) {
 		tip_timer_delay_flag = RESET;
 
-		set_heater_state(NOK);		// dis-allow the heater to be turned on (NOK = not ok to enable the heater)
-		set_heater_output_off();	// hard-disable the heater output to protect the op-amp
+		heater_driver__set_state(NOK);		// dis-allow the heater to be turned on (NOK = not ok to enable the heater)
+		heater_driver__set_output_off();	// hard-disable the heater output to protect the op-amp
 		tip_clamp_pin_disable();	// Set TIP_CLAMP pin to input state (high impedance)
 
 		if (tip_check_counter > (TIP_CHECK_INTERVAL * 50)) {
@@ -87,7 +87,7 @@ void tip_check_counter_increase(void){
 
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc) {
 	tip_clamp_pin_enable();	// Drive TIP_CHECK pin LOW, this clamps thermo-couple signal to prevent transients and noise on the op-amp input
-	set_heater_state(OK);	// adc completed, allow the heater to be enabled again
+	heater_driver__set_state(OK);	// adc completed, allow the heater to be enabled again
 	adc_complete();
 }
 

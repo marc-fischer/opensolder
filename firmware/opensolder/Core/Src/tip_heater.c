@@ -22,11 +22,11 @@ void heater_control_timer_handler(void) {
 
 	// Switch heater on or off
 	if ((on_periods >= 1) && (get_tip_temp() < MAX_TEMP)) {
-		set_heater_output_on();
+		heater_driver__set_output_on();
 		on_periods--;					// decrease the on-duration before next temp measurement happens
 		heater_power_history++;
 	} else {
-		set_heater_output_off(); 							// Turn heater OFF
+		heater_driver__set_output_off(); 							// Turn heater OFF
 		timer_start_tip_measure_delay();					// Start TIM7 to read tip temperature
 	}
 }
@@ -77,7 +77,7 @@ uint16_t get_set_temp(void) {
 void set_tip_error_halt(void) {
 	// Turn heater hard OFF
 	set_tip_heater_off();		// disable the tip heater regulator
-	set_heater_output_off();	// disable the heater output hardware pin
+	heater_driver__set_output_off();	// disable the heater output hardware pin
 }
 
 void error_handler(void) {

@@ -11,7 +11,7 @@
 #include "opensolder.h"
 
 // getters
-int16_t read_pcb_temperature(void);
+int16_t pcb_temperature_driver__get_temperature(void);
 
 
 // setters
