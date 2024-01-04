@@ -45,7 +45,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {		// TODO: check ra
 		tip_timer_handler();
 	}
 	if (htim == &htim14){	// timer14 handles a 2msec system tick to trigger
-		sensor_scan();
+		hid__poll();
 		tip_check_counter_increase();
 	}
 }
@@ -83,4 +83,11 @@ void timer_start_tip_measure_delay(void){
 // getters
 uint32_t get_ac_delay_tick(void) {
 	return ac_delay_tick_ms;
+}
+
+
+// handlers
+void timer_init(void){
+	HAL_TIM_Encoder_Start(&htim2, TIM_CHANNEL_ALL);
+	HAL_TIM_Base_Start_IT(&htim14);
 }

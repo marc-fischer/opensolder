@@ -61,16 +61,20 @@ enum opensolder_messages {
 enum my_states { INIT_STATE, TIP_CHANGE_STATE, OFF_STATE, ON_STATE, STANDBY_STATE, ERROR_STATE };
 
 /******    Global Variables    ******/
-extern ADC_HandleTypeDef hadc;
-extern I2C_HandleTypeDef hi2c1;
-extern TIM_HandleTypeDef htim2;
-extern TIM_HandleTypeDef htim6;
-extern TIM_HandleTypeDef htim7;
+// hardware interface
+extern ADC_HandleTypeDef hadc;			// used for tip temperature and tip presence detection
+extern I2C_HandleTypeDef hi2c1;			// used for PCB Temperature
+extern I2C_HandleTypeDef hi2c2;			// used for I2C extensions
+
+// timers
+extern TIM_HandleTypeDef htim2;			// used for encoder
+extern TIM_HandleTypeDef htim6;			// used for real zero-cross delay
+extern TIM_HandleTypeDef htim7;			// used for tip temp/ presence detection (ADC) delay
+extern TIM_HandleTypeDef htim14;		// used for HID (buttons, display, stand/tip change detection)
 
 /******    Global Function Declarations    ******/
 void opensolder_init(void);
 void opensolder_main(void);
-void sensor_scan(void);
 uint8_t get_system_state(void);
 
 #endif
